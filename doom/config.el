@@ -9,6 +9,9 @@
 ;; (setq user-full-name "John Doe"
 ;;   	user-mail-address "john@doe.com")
 
+(setq user-full-name "NicholasSobolev"
+      user-mail-address "nicholassobolev26@gmail.com")
+
 ;; Doom exposes five (optional) variables for controlling fonts in Doom:
 ;;
 ;; - `doom-font' -- the primary font to use
@@ -33,10 +36,11 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 ;; Set Nerd Font Mono as the default font
+(setq doom-theme 'doom-gruvbox)
 (setq doom-font (font-spec :family "FiraCode Nerd Font Mono" :size 14)) ;; Change the size as needed
 (setq doom-unicode-font (font-spec :family "FiraCode Nerd Font Mono" :size 14)) ;; Optional for Unicode characters
 
-(setq doom-theme 'doom-gruvbox)
+
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -46,89 +50,81 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/notes/org/")
 (setq org-roam-directory (file-truename "~/notes/org-roam/"))
-
-(setq org-roam-file-extension '("org"))
-
+(setq org-agenda-files
+      (directory-files-recursively org-roam-directory "\\.org$"))
+(setq org-roam-dailies-directory "~/notes/org-roam/daily/")
+(setq org-roam-file-exclude-regexp "daily/.*\\.org$") ; Relative path
+(setq org-roam-file-extension "org")
 (setq org-roam-node-display-template
-  	(concat "${type:15} ${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-
+      (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
 (setq org-roam-capture-templates
-  	'(("m" "main" plain "%?"
-     	:if-new (file+head "main/${slug}.org"
-                        	"${title}\n")
-     	:immediate-finish t
-     	:unnarrowed t)
-    	("c" "code" plain "%?"
-     	:if-new (file+head "code/${title}.org"
-                        	"${title}\n")
-     	:immediate-finish t
-     	:unnarrowed t)
-    	("r" "reference" plain "%?"
-     	:if-new (file+head "reference/${title}.org"
-                        	"${title}\n")
-     	:immediate-finish t
-     	:unnarrowed t)
-    	("d" "default" plain "%?"
-     	:if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                        	"${title}\n")
-     	:unnarrowed t)
-    	("t" "templates" plain "%?"
-     	:if-new (file+head "templates/${slug}.org"
-                        	"${title}\n")
-     	:unnarrowed t)))
+      '(("m" "main" plain "%?"
+         :if-new (file+head "main/${slug}.org" "${title}\n")
+         :immediate-finish t
+         :unnarrowed t)
+        ("c" "code" plain "%?"
+         :if-new (file+head "code/${title}.org" "${title}\n")
+         :immediate-finish t
+         :unnarrowed t)
+        ("r" "reference" plain "%?"
+         :if-new (file+head "reference/${title}.org" "${title}\n")
+         :immediate-finish t
+         :unnarrowed t)
+        ("d" "default" plain "%?"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "${title}\n")
+         :unnarrowed t)
+        ("t" "templates" plain "%?"
+         :if-new (file+head "templates/${slug}.org" "${title}\n")
+         :unnarrowed t)))
+;;(setq org-agenda-files '("~/notes/org-roam/daily-todos.org" "~/notes/org-roam/daily/"))
 
-(use-package org-roam
+(use-package! org-roam
+  :after org
   :ensure t
   :custom
   (setq org-roam-directory (file-truename "~/notes/org-roam/"))
   :bind (("C-c n l" . org-roam-buffer-toggle)
-     	("C-c n f" . org-roam-node-find)
-     	("C-c n g" . org-roam-graph)
-     	("C-c n i" . org-roam-node-insert)
-     	("C-c n c" . org-roam-capture)
-     	;; Dailies
-     	("C-c n j" . org-roam-dailies-capture-today))
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ("C-c n j" . org-roam-dailies-capture-today))
   :config
-  ;; If you're using a vertical completion framework, you might want a more informative completion interface
+  (require 'org-roam-node)
   (org-roam-db-autosync-mode)
-  ;; If using org-roam-protocol
   (require 'org-roam-protocol))
+
+(map! :leader
+      :prefix "n"
+      :desc "Org-roam buffer"        "l" #'org-roam-buffer-toggle
+      :desc "Find node"              "f" #'org-roam-node-find
+      :desc "Insert node"            "i" #'org-roam-node-insert
+      :desc "Capture node"           "c" #'org-roam-capture
+      :desc "Org-roam graph"         "g" #'org-roam-graph
+      :desc "Dailies capture today"  "j" #'org-roam-dailies-capture-today)
 
 (use-package! org-roam-ui
   :after org-roam
   :hook (org-roam-mode . org-roam-ui-mode)
   :config
   (setq org-roam-ui-sync-theme t
-    	org-roam-ui-follow t
-    	org-roam-ui-update-on-save t
-    	org-roam-ui-open-on-start t))
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start t))
 
-(use-package vterm
+(use-package! vterm
   :ensure t
   :commands vterm)
 
 (setq default-input-method "japanese")
-
 (general-define-key
  :states 'insert
  "q" (general-key-dispatch 'self-insert-command
-   	:timeout 0.25
-   	"q" 'toggle-input-method))
+      :timeout 0.25
+      "q" 'toggle-input-method))
 
-(setq org-roam-directory "~/notes/org-roam/")
-(setq org-agenda-files '("~/notes/org-roam/"))
-(setq org-agenda-file-note t)
-
-(with-eval-after-load 'org
-  (setq org-agenda-files nil)
-  (add-to-list 'org-agenda-files "~/notes/org-roam")
-  (setq org-agenda-file-note t))
-
-(add-hook 'text-mode-hook 'flyspell-mode)
-(add-hook 'org-mode-hook 'flyspell-mode)
-
-(set-frame-parameter nil 'alpha-background 90)
-(add-to-list 'default-frame-alist '(alpha-background . 90))
+(set-frame-parameter nil 'alpha-background 80)
+(add-to-list 'default-frame-alist '(alpha-background . 80))
 
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
