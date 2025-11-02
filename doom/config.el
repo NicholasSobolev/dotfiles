@@ -36,7 +36,15 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 ;; Set Nerd Font Mono as the default font
-(setq doom-theme 'doom-gruvbox)
+(add-to-list 'custom-theme-load-path "~/.config/doom/themes")
+(load-theme 'oxocarbon t)
+(after! doom-dashboard
+  (custom-set-faces!
+    '(doom-dashboard-banner :foreground "#f2f4f8" :background nil :weight bold :inherit variable-pitch)
+    '(doom-dashboard-menu-title :foreground "#ffffff" :weight bold)
+    '(doom-dashboard-menu-desc :foreground "#dde1e6")
+    '(doom-dashboard-loaded :foreground "#78a9ff")
+    '(doom-dashboard-footer :foreground "#525252" :inherit font-lock-comment-face)))
 (setq doom-font (font-spec :family "FiraCode Nerd Font Mono" :size 14)) ;; Change the size as needed
 (setq doom-unicode-font (font-spec :family "FiraCode Nerd Font Mono" :size 14)) ;; Optional for Unicode characters
 
@@ -59,22 +67,31 @@
       (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
 (setq org-roam-capture-templates
       '(("m" "main" plain "%?"
-         :if-new (file+head "main/${slug}.org" "${title}\n")
+         :if-new (file+head "main/${slug}.org" "#+title: ${title}\n")
          :immediate-finish t
          :unnarrowed t)
         ("c" "code" plain "%?"
-         :if-new (file+head "code/${title}.org" "${title}\n")
+         :if-new (file+head "code/${title}.org" "#+title: ${title}\n")
          :immediate-finish t
          :unnarrowed t)
         ("r" "reference" plain "%?"
-         :if-new (file+head "reference/${title}.org" "${title}\n")
+         :if-new (file+head "reference/${title}.org" "#+title: ${title}\n")
+         :immediate-finish t
+         :unnarrowed t)
+        ("p" "personal" plain "%?"
+         :if-new (file+head "personal/${slug}.org" "#+title: ${title}\n")
+         :unnarrowed t)
+        ("b" "books" plain "%?"
+         :if-new (file+head "personal/books/${slug}.org" "#+title: ${title}\n")
+         :immediate-finish t
+         :unnarrowed t)
+        ("h" "health" plain "%?"
+         :if-new (file+head "personal/health/${slug}.org" "#+title: ${title}\n")
          :immediate-finish t
          :unnarrowed t)
         ("d" "default" plain "%?"
-         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "${title}\n")
-         :unnarrowed t)
-        ("t" "templates" plain "%?"
-         :if-new (file+head "templates/${slug}.org" "${title}\n")
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+         :immediate-finish t
          :unnarrowed t)))
 ;;(setq org-agenda-files '("~/notes/org-roam/daily-todos.org" "~/notes/org-roam/daily/"))
 
