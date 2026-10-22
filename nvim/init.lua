@@ -1,4 +1,6 @@
 vim.g.mapleader = ' '
+vim.opt.termguicolors = true
+vim.cmd.colorscheme("nicholas")
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -21,7 +23,6 @@ require("lazy").setup({
 })
 
 vim.o.background = "dark" -- or "light" for light mode
-vim.cmd([[colorscheme gruvbox]])
 vim.cmd(":hi statusline guibg=NONE")
 vim.cmd([[set mouse=]])
 vim.cmd([[set noswapfile]])
@@ -31,24 +32,19 @@ vim.opt.clipboard = 'unnamedplus'
 vim.opt.winborder = "rounded"
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
-vim.opt.showtabline = 2
+vim.opt.showtabline = 0
 vim.opt.signcolumn = "yes"
 vim.opt.wrap = false
 vim.opt.cursorcolumn = false
 vim.opt.ignorecase = true
 vim.opt.smartindent = true
-vim.opt.termguicolors = true
+vim.opt.guicursor = "a:block,c-ci:block-blinkwait700-blinkon250-blinkoff400"
 vim.opt.undofile = true
 vim.opt.number = true
 vim.opt.relativenumber = true
 
--- stylistic change for diagnostics
 vim.diagnostic.config({
-  virtual_text = {
-    source = "if_many",  -- show source if multiple LSPs
-    spacing = 2,         -- space between code and text
-    prefix = "●",        -- or "■", "▶", ""
-  },
+  virtual_text = false,
 })
 
 vim.cmd [[set completeopt+=menuone,noselect,popup]]
